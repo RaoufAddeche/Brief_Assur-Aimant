@@ -1,61 +1,65 @@
 import streamlit as st
-import pickle
 import pandas as pd
+import numpy as np
+import pickle
+from sklearn.preprocessing import StandardScaler
 
-# Charger le modèle et les pipelines
+# Chargement du modèle exporté
 @st.cache_resource
-def load_model_and_pipeline():
-    with open('model.pkl', 'rb') as model_file:
-        model = pickle.load(model_file)
-    with open('pipeline.pkl', 'rb') as pipeline_file:
-        pipeline = pickle.load(pipeline_file)
-    return model, pipeline
+def charger_modele():
+    with open("modele.pkl", "rb") as file:
+        modele = pickle.load(file)
+    return modele
 
-# Charger le modèle et le pipeline
-model, pipeline = load_model_and_pipeline()
+modele = charger_modele()
 
-# Interface utilisateur
-st.title("Application de Prédiction Interactive")
-st.write("Saisissez vos données pour générer une prédiction.")
+# Titre de l'application
+st.title("Prédiction des Primes d'Assurance")
 
-# Exemple de formulaire pour la saisie utilisateur
-age = st.number_input("Âge", min_value=0, max_value=120, value=30, step=1)
-genre = st.selectbox("Genre", options=["Homme", "Femme"])
-salaire_annuel = st.number_input("Salaire Annuel (€)", min_value=0, step=1000, value=50000)
-score_credit = st.slider("Score de Crédit", min_value=0, max_value=1000, value=500)
+st.write("Cette application permet de prédire les primes d'assurance en fonction des données démographiques de l'utilisateur.")
 
-# Conversion des données utilisateur en DataFrame
-user_data = {
-    "age": [age],
-    "genre": [genre],
-    "salaire_annuel": [salaire_annuel],
-    "score_credit": [score_credit],
+# Saisie des informations utilisateur
+st.sidebar.header("Entrez vos informations :")
+
+age = st.sidebar.number_input("Âge", min_value=18, max_value=100, value=30)
+sexe = st.sidebar.selectbox("Sexe", options=["Homme", "Femme"])
+bmi = st.sidebar.number_input("IMC (BMI)", min_value=10.0, max_value=50.0, value=25.0, step=0.1)
+enfants = st.sidebar.number_input("Nombre d'enfants", min_value=0, max_value=10, value=0, step=1)
+fumeur = st.sidebar.selectbox("Fumeur", options=["Oui", "Non"])
+region = st.sidebar.selectbox("Région", options=["Sud-Ouest", "Sud-Est", "Nord-Ouest", "Nord-Est"])
+
+# Préparation des données
+st.write("### Données saisies :")
+donnees_utilisateur = {
+    "Âge": age,
+    "Sexe": sexe,
+    "IMC": bmi,
+    "Nombre d'enfants": enfants,
+    "Fumeur": fumeur,
+    "Région": region,
 }
-input_df = pd.DataFrame(user_data)
 
-# Prétraitement des données
-st.write("Données brutes saisies :")
-st.write(input_df)
+donnees_df = pd.DataFrame([donnees_utilisateur])
+st.write(donnees_df)
 
-try:
-    preprocessed_data = pipeline.transform(input_df)
-except Exception as e:
-    st.error(f"Erreur lors du prétraitement des données : {e}")
-    preprocessed_data = None
+# Encodage et préparation des données (doit correspondre au pipeline utilisé dans le modèle)
+@st.cache_data
+def preprocess_data(donnees):
+    donnees = donnees.copy()
+    donnees["Sexe"] = donnees["Sexe"].map({"Homme": 1, "Femme": 0})
+    donnees["Fumeur"] = donnees["Fumeur"].map({"Oui": 1, "Non": 0})
+    donnees = pd.get_dummies(donnees, columns=["Région"], drop_first=True)
+    return donnees
 
-# Génération de la prédiction
-if preprocessed_data is not None:
-    prediction = model.predict(preprocessed_data)
-    st.write("**Prédiction générée :**")
-    st.write(prediction)
-else:
-    st.warning("Impossible de générer une prédiction en raison d'une erreur dans le prétraitement.")
+donnees_pretraitees = preprocess_data(donnees_df)
 
-# Ajouter une explication si possible
-if st.checkbox("Afficher les probabilités ou l'explication (si disponible)"):
-    try:
-        prediction_proba = model.predict_proba(preprocessed_data)
-        st.write("Probabilités des classes :")
-        st.write(prediction_proba)
-    except AttributeError:
-        st.warning("Le modèle ne fournit pas de probabilités ou d'explications.")
+# Standardisation (si nécessaire)
+scaler = StandardScaler()
+donnees_finales = scaler.fit_transform(donnees_pretraitees)
+
+# Prédiction
+if st.button("Prédire"):
+    prediction = modele.predict(donnees_finales)
+    st.write("### Résultat de la Prédiction :")
+    st.success(f"Votre prime d'assurance estimée est : {prediction[0]:.2f} €")
+
