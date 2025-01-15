@@ -1,0 +1,57 @@
+modeliser proba
+
+variable quantitative = nombres / operation possible avec un sens
+variable discrete / nombre entier
+variable continue = 1;2;3 etc..
+variable qualitative =category , nominales/ ordinales
+
+nettoyage:
+valeurs manqauntes
+erreur lexicale
+erreur d'irregularité = 153cm a la place de 1m53
+erreur de formatage = @supermail.com
+doublon
+erreur de contradiction sur doublon
+outlier 3,45m , valeur extreme
+dictionnaire pour fixer la validation
+
+outliers:valeur aberrantes fausse/valeur atypique qui sort du lot
+imputation /imputation par la moyenne
+
+distribution empirique ex : course | 210
+tableau de contingence on compte le nombre de point
+correlation , relation entre variable
+SCT est ici appelé variation totale (les anglophones utilisent plutôt Total Sum of Squares).
+SCE est ici appelé variation interclasse (Sum of Squares of the Model).
+SCR est ici appelé variation intraclasse (Sum of Squares of the Error) car s2i est la variance au sein de la classe i .
+anova = variable quantita + qualit correlation verif
+
+regression lineaire = observer un phenomene quantitatif et lexpliquer par variable quantita et qualit dans certains cas 
+La classification supervisée, qui permet d'expliquer une variable qualitative à partir de variables explicatives quantitatives (éventuellement qualitatives en sus)
+L'analyse de la variance, pour analyser l'influence d'une ou deux variables explicatives qualitatives sur une variable quantitative.
+
+L'analyse de la variance terme souvent abrégé par l'anglais ANOVA 
+
+appréhender les facteurs pouvant influencer l'apparition d'une maladie coronarienne à des fins de prévision.
+Dans ce cas, nous allons utiliser une régression logistique.
+
+Y la varible qu'on cherche a expliquer
+X la variable explicative / regresseur 
+relation lineaire entre Y et X
+
+MCO =  estimateur des  Moindre carré ordinaire
+coefficient de determination = R2 a l'issu d'une regression  R2 egale Somme des carres expliquer et des SCT elle est forcmeent entre 0 et 1 plus c'est proche 1 cest positif
+ 
+ SCT (Somme des Carrés Totale) traduit la variation totale de Y
+
+.
+ SCE
+
+(Somme des Carrés Expliquée) traduit la variation expliquée par le modèle.
+
+ SCR
+(Somme des Carrés Résiduelle) traduit la variation inexpliquée par le modèle.
+
+hypothèse gaussienne = Cette loi normale nous permettra notamment de tester la significativité des paramètres. 
+exemple  pic d'ozone et la température à midi, nous allons pouvoir tester si la température à midi est significative pour expliquer le pic d'ozone.
+Avec cette hypothèse, on parle de modèle linéaire gaussien simple.
